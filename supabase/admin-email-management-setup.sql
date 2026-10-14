@@ -239,4 +239,12 @@ end;
 $disable_legacy_admin_rpc$;
 
 -- The former code-based enrollment function is no longer needed by the panel.
-revoke all on function public.verify_admin_code(text) from public, anon, authenticated;
+-- The former code-based enrollment function may not exist in every project.
+-- Revoke it only when that exact signature is present, keeping this script re-runnable.
+do $disable_legacy_code_rpc$
+begin
+  if pg_catalog.to_regprocedure('public.verify_admin_code(text)') is not null then
+    execute 'revoke all on function public.verify_admin_code(text) from public, anon, authenticated';
+  end if;
+end;
+$disable_legacy_code_rpc$;
