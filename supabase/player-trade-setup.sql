@@ -22,6 +22,22 @@ create table if not exists public.player_trade_requests (
   )
 );
 
+-- The application stores one quantity row per player/item; verify this before transfers.
+do $inventory_guard$
+begin
+  if exists (
+    select 1 from public.inventory
+    group by user_id, item_id
+    having count(*) > 1
+  ) then
+    raise exception 'inventoryに同じプレイヤー・アイテムの重複行があります。取引機能を有効にする前に整理してください。';
+  end if;
+end;
+$inventory_guard$;
+
+create unique index if not exists player_trade_inventory_user_item_uidx
+  on public.inventory(user_id, item_id);
+
 alter table public.player_trade_requests enable row level security;
 revoke all on table public.player_trade_requests from public, anon, authenticated;
 
