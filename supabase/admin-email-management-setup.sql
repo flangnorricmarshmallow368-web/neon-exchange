@@ -18,7 +18,7 @@ revoke all on table private.neon_admin_settings from public, anon, authenticated
 
 do $admin_config$
 declare
-  v_admin_email_md5 text := 'd4409fc3455b95d40b86694ab351e3af';
+  v_admin_email_md5 text := '7f4e6fdc74537cb81002b5bd3d9a27f9';
 begin
   if v_admin_email_md5 !~ '^[0-9a-f]{32}$' then
     raise exception '管理者メールの設定ハッシュが不正です。';
