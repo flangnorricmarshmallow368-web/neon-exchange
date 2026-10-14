@@ -13,11 +13,13 @@
 <body>
 <div id="onboarding" class="formbox">
  <div class="brand" style="margin:0 0 20px"><span class="logo">✦</span><span>NEON EXCHANGE<small style="display:block;color:var(--muted);font-size:11px;font-weight:500">VIRTUAL COLLECTION GAME</small></span></div>
- <h2>プレイヤー登録</h2><p class="muted">ガチャでコレクションを集め、アイテムを売買して資産ランキングを目指そう。</p>
- <div class="warning">現在はブラウザ保存の試作版です。オンライン共有・他プレイヤーとの実取引にはサーバー接続が必要です。ガチャのレア度は見た目・コレクション用で、どのアイテムも売却価格は同じです。</div>
- <div class="field"><label for="newId">プレイヤーID（3〜20文字）</label><input id="newId" maxlength="20" placeholder="例：NeonPlayer01"></div>
- <button id="createPlayer" style="width:100%">登録してゲーム開始</button>
- <p class="tiny muted">初期所持金：50,000コイン</p>
+ <h2>オンラインプレイヤー登録</h2><p class="muted">メールのログインリンクで安全にサインイン。パスワード入力は不要です。</p>
+ <div class="warning">オンライン版：コイン・アイテム・履歴はサーバー保存です。ゲーム内コインのみで、現金・暗号資産とは連動しません。</div>
+ <div class="field"><label for="newId">プレイヤーID（3〜20文字）</label><input id="newId" maxlength="20" autocomplete="nickname" placeholder="例：NeonPlayer01"></div>
+ <div class="field"><label for="playerEmail">メールアドレス</label><input id="playerEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+ <button id="createPlayer" style="width:100%">ログインリンクをメールで送信</button>
+ <p id="authMessage" class="tiny muted">メールに届くリンクを開くとゲームに入れます。</p>
+ <p class="tiny muted">初期所持金：50,000コイン（新規登録時）</p>
 </div>
 <div id="app" class="shell hidden">
  <aside class="sidebar">
@@ -56,6 +58,7 @@
   <div class="footer">NEON EXCHANGE · 試作版 · ゲーム内コインのみ · 現金や暗号資産との連動なし</div>
  </main>
 </div><div id="notice" class="notice"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const $=id=>document.getElementById(id), KEY='neonExchangeTycoon_v3';
 const ITEMS={
@@ -104,6 +107,114 @@ $('kickPlayer').onclick=()=>{if(!targetOk())return;if(confirm('このブラウ�
 $('saveNote').onclick=()=>{const note=$('adminNotice').value.trim();if(!note){notice('メモを入力してください');return}addHist('管理メモ',note,0);save();$('adminNotice').value='';notice('メモを記録しました')};
 $('breakNow').onclick=()=>{lastBreak=Date.now();$('breakStatus').textContent='休憩中：15分休んでから戻ろう！';notice('休憩タイム！15分ほど画面から離れよう')};
 setInterval(()=>{if(!s.id)return;const now=Date.now();s.playMs+=Math.max(0,now-lastTick);lastTick=now;if(now-lastBreak>=60*60*1000){lastBreak=now;$('breakStatus').textContent='1時間経過！15分休憩しよう。';notice('1時間プレイしました。15分休憩しよう！')}save()},10000);
-init();
+
+const SUPABASE_URL='https://sfcgjhpeldaetedoiabl.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_VfbezJK-oJxnRVIbN9uEYQ_29HXGbIl';
+const onlineClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let onlineUser=null, onlineBusy=false;
+function authMessage(t){const el=$('authMessage');if(el)el.textContent=t}
+function backendError(e){return e?.message||'接続に失敗しました。少し待って再試行してください。'}
+async function initOnline(){
+ $('onboarding').classList.remove('hidden');$('app').classList.add('hidden');
+ $('onlineBadge').textContent='● 接続中';
+ const {data,error}=await onlineClient.auth.getSession();
+ if(error){authMessage(backendError(error));return}
+ if(data.session){onlineUser=data.session.user;await loadOnlineState();return}
+ const {data:authData}=await onlineClient.auth.getUser();
+ if(authData?.user){onlineUser=authData.user;await loadOnlineState()}
+}
+$('createPlayer').onclick=async()=>{
+ if(onlineBusy)return;
+ const id=$('newId').value.trim(),email=$('playerEmail').value.trim();
+ if(!/^[\p{L}\p{N}_-]{3,20}$/u.test(id)){authMessage('プレイヤーIDは3〜20文字で入力してください。');return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){authMessage('メールアドレスを確認してください。');return}
+ onlineBusy=true;$('createPlayer').disabled=true;authMessage('ログインリンクを送信しています…');
+ try{
+  const {error}=await onlineClient.auth.signInWithOtp({email,options:{emailRedirectTo:location.href,data:{player_name:id}}});
+  if(error)throw error;
+  authMessage('送信しました！メールを開き、ログインリンクを押してください。この画面は閉じずに待っていても大丈夫です。');
+  notice('ログインリンクをメールで送信しました');
+ }catch(e){authMessage(backendError(e))}
+ finally{onlineBusy=false;$('createPlayer').disabled=false}
+};
+onlineClient.auth.onAuthStateChange((event,session)=>{
+ if(session?.user){onlineUser=session.user;setTimeout(()=>loadOnlineState(),0)}
+ else if(event==='SIGNED_OUT'){onlineUser=null;$('app').classList.add('hidden');$('onboarding').classList.remove('hidden');$('onlineBadge').textContent='● 未ログイン'}
+});
+async function loadOnlineState(){
+ if(!onlineUser){$('onboarding').classList.remove('hidden');return}
+ try{
+  const [p,w,inv,h]=await Promise.all([
+   onlineClient.from('profiles').select('id,player_name,created_at').eq('id',onlineUser.id).single(),
+   onlineClient.from('wallets').select('coins').eq('user_id',onlineUser.id).single(),
+   onlineClient.from('inventory').select('item_id,quantity').eq('user_id',onlineUser.id),
+   onlineClient.from('game_history').select('action,detail,amount,created_at').eq('user_id',onlineUser.id).order('created_at',{ascending:false}).limit(250)
+  ]);
+  if(p.error)throw p.error;if(w.error)throw w.error;if(inv.error)throw inv.error;if(h.error)throw h.error;
+  s={id:p.data.player_name,cash:Number(w.data.coins),items:{},history:[],playMs:s.playMs||0,kicked:false,trades:[],known:{}};
+  (inv.data||[]).forEach(x=>{s.items[x.item_id]=Number(x.quantity);s.known[x.item_id]=true});
+  s.history=(h.data||[]).map(x=>({date:new Date(x.created_at).toLocaleString('ja-JP'),type:x.action,detail:x.detail,amount:(Number(x.amount)>0?'+':Number(x.amount)<0?'−':'')+fmt(Math.abs(Number(x.amount)))}));
+  $('onboarding').classList.add('hidden');$('app').classList.remove('hidden');$('onlineBadge').textContent='● オンライン';$('side-note');
+  render();await updatePresence();
+ }catch(e){console.error(e);$('onboarding').classList.remove('hidden');$('app').classList.add('hidden');authMessage('データの読み込みに失敗しました：'+backendError(e))}
+}
+async function updatePresence(){if(!onlineUser)return;const {error}=await onlineClient.rpc('record_presence');if(error)console.warn('presence',error)}
+async function refreshOnline(){await loadOnlineState()}
+save=function(){render()};
+async function onlineRpc(name,args={}){
+ if(!onlineUser){notice('先にメールのログインリンクからサインインしてください');return null}
+ const {data,error}=await onlineClient.rpc(name,args);if(error){notice(backendError(error));return null}return data
+};
+$('openGacha').onclick=async()=>{
+ if(onlineBusy)return;onlineBusy=true;const btn=$('openGacha'),stage=$('gachaIcon').parentElement;
+ btn.disabled=true;btn.textContent='カプセル開封中…';$('gachaIcon').textContent='🟣';$('gachaName').textContent='カプセルを開封中…';$('gachaRarity').textContent='???';$('gachaResult').textContent='サーバーで抽選中…';
+ try{
+  const result=await onlineRpc('open_gacha');if(!result)return;
+  const d=ITEMS[result.item_id];if(!d)throw new Error('アイテム情報を読み込めませんでした');
+  $('gachaIcon').textContent=d.icon;$('gachaName').textContent=result.name||d.name;$('gachaRarity').textContent=result.rarity||d.rarity;$('gachaResult').textContent='アイテムを獲得！ 売却価格は '+fmt(d.value)+' です。';
+  stage.classList.remove('gacha-flash');void stage.offsetWidth;stage.classList.add('gacha-flash');$('gachaIcon').classList.remove('gacha-opening');$('gachaIcon').classList.add('gacha-rare');setTimeout(()=>$('gachaIcon').classList.remove('gacha-rare'),900);
+  await refreshOnline();notice((result.rarity||d.rarity)+'アイテムを獲得！');
+ }catch(e){notice(backendError(e))}
+ finally{onlineBusy=false;btn.disabled=false;btn.textContent='5,000コインでもう一度引く'}
+};
+sell=async function(id){
+ const d=ITEMS[id];if(!d||onlineBusy)return;onlineBusy=true;
+ try{const result=await onlineRpc('sell_item',{p_item_id:id});if(!result)return;await refreshOnline();notice(d.name+'を売却しました')}
+ finally{onlineBusy=false}
+};
+renderShop=function(){
+ const root=$('shopList');root.innerHTML='';
+ Object.entries(SHOP).forEach(([id,d])=>{const row=document.createElement('div');row.className='card';row.style.margin='10px 0';row.innerHTML='<div class="item"><div class="itemicon">'+d.icon+'</div><div class="iteminfo"><b>'+esc(d.name)+'</b><small>購入価格 '+fmt(d.price)+'</small></div><button data-shopbuy="'+id+'">購入</button></div>';root.appendChild(row)});
+ root.querySelectorAll('[data-shopbuy]').forEach(b=>b.onclick=async()=>{if(onlineBusy)return;onlineBusy=true;try{const result=await onlineRpc('buy_item',{p_item_id:b.dataset.shopbuy});if(!result)return;await refreshOnline();notice(SHOP[b.dataset.shopbuy].name+'を購入しました')}finally{onlineBusy=false}});
+};
+renderRank=async function(metric){
+ metric=metric||document.querySelector('[data-rank].active')?.dataset.rank||'cash';
+ $('rankMetric').textContent=({cash:'所持コイン',items:'アイテム価値',time:'最終アクセス'})[metric];
+ const root=$('rankRows');root.innerHTML='<tr><td colspan="3">読み込み中…</td></tr>';
+ try{
+  const {data,error}=await onlineClient.from('leaderboard').select('player_name,coins,item_value,last_seen').order(metric==='items'?'item_value':metric==='time'?'last_seen':'coins',{ascending:metric==='time'}).limit(50);
+  if(error)throw error;root.replaceChildren();
+  (data||[]).forEach((x,i)=>{const tr=document.createElement('tr');const seen=Date.now()-new Date(x.last_seen).getTime()<120000;const value=metric==='items'?fmt(Number(x.item_value)):metric==='time'?(seen?'🟢 オンライン':'⚪ オフライン'):fmt(Number(x.coins));[i+1,x.player_name,value].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});root.appendChild(tr)});
+  if(!data?.length)root.innerHTML='<tr><td colspan="3">まだプレイヤーがいません。</td></tr>';
+ }catch(e){root.innerHTML='<tr><td colspan="3">ランキングを読み込めません：'+esc(backendError(e))+'</td></tr>'}
+};
+$('createTrade').onclick=()=>notice('オンライン取引は安全な取引処理の追加準備中です。今は申請を送信していません。');
+$('adminLoginButton').onclick=async()=>{
+ if(!onlineUser){notice('先にサインインしてください');return}
+ const amount=Math.floor(Number($('adminMoney').value));
+ const target=$('adminTarget').value.trim();
+ if(!target||!Number.isFinite(amount)||amount===0){notice('プレイヤーIDと金額を確認してください');return}
+ const {data,error}=await onlineClient.rpc('admin_adjust_coins',{p_player_name:target,p_amount:amount,p_reason:'管理者パネルからの変更'});
+ if(error){notice(backendError(error));return}
+ $('adminLogin').classList.add('hidden');$('adminTools').classList.remove('hidden');await refreshOnline();notice('管理者操作を実行しました');
+};
+$('giveMoney').onclick=()=>{const n=Math.abs(Math.floor(Number($('adminMoney').value)));if(!n){notice('金額を入力してください');return}$('adminMoney').value=String(n);$('adminTarget').value=$('adminTarget').value.trim()||s.id;onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:n,p_reason:'管理者によるコイン付与'}).then(async({error})=>{if(error)notice(backendError(error));else{await refreshOnline();notice(fmt(n)+'コインを付与しました')}})};
+$('takeMoney').onclick=()=>{const n=Math.abs(Math.floor(Number($('adminMoney').value)));if(!n){notice('金額を入力してください');return}$('adminTarget').value=$('adminTarget').value.trim()||s.id;onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:-n,p_reason:'管理者によるコイン差引'}).then(async({error})=>{if(error)notice(backendError(error));else{await refreshOnline();notice(fmt(n)+'コインを差し引きました')}})};
+$('kickPlayer').onclick=()=>notice('プレイヤー停止機能は、管理者権限をサーバー側で追加してから有効にします。');
+$('saveNote').onclick=()=>notice('管理メモのオンライン保存は次の更新で対応します。');
+setInterval(()=>{if(onlineUser)updatePresence()},30000);
+setInterval(()=>{if(onlineUser)refreshOnline()},60000);
+
+initOnline();
 </script>
 </body></html>
