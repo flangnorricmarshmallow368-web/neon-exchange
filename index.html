@@ -32,7 +32,7 @@
    <button data-tab="trade">⇄　プレイヤー取引</button>
    <button data-tab="leaderboard">♛　ランキング</button>
    <button data-tab="history">◷　履歴</button>
-   <small>管理</small><button data-tab="admin">⚙　管理者パネル</button>
+   <small id="adminNavLabel" class="hidden">管理</small><button id="adminTabButton" class="hidden" data-tab="admin">⚙　管理者</button>
   </nav>
   <div class="side-note">DEMO GAME<br>ゲーム内コインのみ<br>現金・暗号資産とは無関係</div>
  </aside>
@@ -54,7 +54,37 @@
   <section id="trade" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">プレイヤー間取引</h3><p class="muted">取引申請はサーバーに保存され、相手が承認するとコイン・アイテムが移転します。承認時に所持数をサーバーで再確認します。</p><div class="field"><label for="tradeTarget">相手のプレイヤーID</label><input id="tradeTarget" maxlength="20" placeholder="取引相手のID"></div><div class="field"><label for="tradeItem">渡すアイテム</label><select id="tradeItem"></select></div><div class="field"><label for="tradeItemQuantity">渡すアイテム数</label><input id="tradeItemQuantity" type="number" min="1" max="100000" value="1"></div><div class="field"><label for="tradeCoins">渡すコイン数</label><input id="tradeCoins" type="number" min="0" step="1" value="0"></div><button id="createTrade">取引申請を送信</button><div id="tradeList" style="margin-top:14px"></div></div><div class="card"><h3 style="margin-top:0">オンライン状態</h3><p><span class="online-dot"></span><b id="myOnlineStatus">接続状態を確認中…</b></p><p id="onlineSummary" class="muted">オンライン人数を読み込み中…</p><div id="onlinePlayerList"></div></div></div></section>
   <section id="leaderboard" class="section"><div class="card"><h3 style="margin-top:0">リーダーボード</h3><div class="muted">所持コイン・アイテム価値・最終アクセスをサーバーから取得します。</div><div class="ranktabs"><button class="active" data-rank="cash">所持コイン</button><button data-rank="items">アイテム価値</button><button data-rank="time">最終アクセス</button></div><div class="tablewrap"><table><thead><tr><th>順位</th><th>プレイヤーID</th><th id="rankMetric">所持コイン</th></tr></thead><tbody id="rankRows"></tbody></table></div></div></section>
   <section id="history" class="section"><div class="card"><h3 style="margin-top:0">履歴</h3><div class="tablewrap"><table><thead><tr><th>日時</th><th>内容</th><th>詳細</th><th>金額</th></tr></thead><tbody id="historyRows"></tbody></table></div><div id="historyEmpty" class="empty">まだ履歴がありません。</div></div></section>
-  <section id="admin" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">管理者パネル</h3><p class="muted">管理者コード認証後に開きます。コイン変更の安全性は、Supabase側の関数でも権限確認が必要です。</p><div id="adminLogin"><div class="field"><label for="adminCode">管理者コード</label><input id="adminCode" type="password" inputmode="numeric" autocomplete="off" maxlength="128" placeholder="管理者コードを入力"></div><button id="adminLoginButton">管理者コードを確認</button><p id="adminAuthMessage" class="tiny muted">メールでログインした後、管理者コードを入力してください。</p><div class="warning">コードはサーバー側で照合します。正しいコードが確認されるまで管理者ツールは開きません。</div></div><div id="adminTools" class="hidden"><div class="field"><label for="adminTarget">対象プレイヤーID</label><input id="adminTarget" placeholder="プレイヤーID"></div><div class="field"><label for="adminMoney">付与 / 差し引きコイン</label><input id="adminMoney" type="number" min="1" value="10000"></div><div class="actions"><button id="giveMoney">コインを付与</button><button id="takeMoney" class="secondary">コインを差し引く</button><button id="kickPlayer" class="red">プレイヤーデータをリセット</button></div><div class="field"><label for="adminNotice">管理メモ</label><input id="adminNotice" placeholder="任意のメモ"></div><button id="saveNote" class="secondary">メモを履歴に記録</button></div></div><div class="card"><h3 style="margin-top:0">管理情報</h3><div class="label">このブラウザのプレイヤー</div><div class="big" id="adminPlayerCount">1</div><div class="label">履歴件数</div><div class="big" id="adminHistoryCount">0</div></div></div></section>
+  <section id="admin" class="section"><div class="grid">
+   <div class="card wide">
+    <h3 style="margin-top:0">⚙ 管理者パネル</h3>
+    <p class="muted">登録プレイヤーのID変更、コイン付与・差引、アイテム配布を行えます。対象は一覧から選択します。</p>
+    <div id="adminAccountStatus" class="warning">管理者権限をサーバーに確認中…</div>
+    <div class="field"><label for="adminPlayerSelect">対象プレイヤー（ID・所持コイン）</label><select id="adminPlayerSelect"><option value="">プレイヤー一覧を読み込み中…</option></select></div>
+    <div id="adminTargetInfo" class="tiny muted">対象プレイヤーを選択してください。</div>
+    <div class="actions" style="margin-top:10px"><button id="adminRefreshPlayers" class="secondary">プレイヤー一覧を更新</button></div>
+    <hr style="border-color:var(--line);margin:18px 0">
+    <h4>プレイヤーIDの変更</h4>
+    <div class="field"><label for="adminNewPlayerId">新しいプレイヤーID（3〜20文字）</label><input id="adminNewPlayerId" maxlength="20" autocomplete="off" placeholder="新しいIDを入力"></div>
+    <button id="adminRenamePlayer">選択したプレイヤーのIDを変更</button>
+    <hr style="border-color:var(--line);margin:18px 0">
+    <h4>コインの管理</h4>
+    <div class="field"><label for="adminMoney">コイン数</label><input id="adminMoney" type="number" min="1" max="1000000000000" step="1" value="10000"></div>
+    <div class="actions"><button id="giveMoney">コインを付与</button><button id="takeMoney" class="secondary">コインを差し引く</button></div>
+    <hr style="border-color:var(--line);margin:18px 0">
+    <h4>アイテムの配布</h4>
+    <div class="field"><label for="adminItemSelect">配布するアイテム</label><select id="adminItemSelect">
+      <option value="neon">🟣 ネオンスライム</option>
+      <option value="star">🌟 スターダスト</option>
+      <option value="fox">🦊 ホログラムフォックス</option>
+      <option value="dragon">🐉 ネオンドラゴン</option>
+      <option value="crystal">💎 クリスタルコア</option>
+      <option value="crown">👑 銀河の王冠</option>
+    </select></div>
+    <div class="field"><label for="adminItemQuantity">配布する個数</label><input id="adminItemQuantity" type="number" min="1" max="100000" step="1" value="1"></div>
+    <button id="adminGiveItem">選択したプレイヤーにアイテムを配布</button>
+   </div>
+   <div class="card"><h3 style="margin-top:0">管理情報</h3><div class="label">登録プレイヤー数</div><div class="big" id="adminPlayerCount">0</div><div class="label">自分の履歴件数</div><div class="big" id="adminHistoryCount">0</div><p class="tiny muted">管理操作はサーバー側で管理者メールを確認して実行します。</p></div>
+  </div></section>
   <div class="footer">NEON EXCHANGE · 試作版 · ゲーム内コインのみ · 現金や暗号資産との連動なし</div>
  </main>
 </div><div id="notice" class="notice"></div>
@@ -82,7 +112,12 @@ function ownedCount(){return Object.values(s.items).reduce((a,b)=>a+b,0)}
 function duration(ms){let n=Math.floor(ms/1000);return n<3600?Math.floor(n/60)+'分':Math.floor(n/3600)+'時間'+Math.floor(n%3600/60)+'分'}
 function init(){load();if(s.id&&!s.kicked){$('onboarding').classList.add('hidden');$('app').classList.remove('hidden');render()}else if(s.kicked){localStorage.removeItem(KEY);s={id:'',cash:50000,items:{},history:[],playMs:0,kicked:false,trades:[],known:{}}}}
 $('createPlayer').onclick=()=>{const id=$('newId').value.trim();if(!/^[\p{L}\p{N}_-]{3,20}$/u.test(id)){notice('IDは3〜20文字で入力してください');return}if(localStorage.getItem(KEY)){notice('このブラウザに保存済みデータがあります');return}s={id,cash:50000,items:{},history:[],playMs:0,kicked:false,trades:[],known:{}};addHist('プレイヤー登録','初期コイン',50000);save();$('onboarding').classList.add('hidden');$('app').classList.remove('hidden');notice('登録完了！50,000コインを付与しました')};
-function tab(id){document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));$('pageTitle').textContent=({home:'ホーム',gacha:'ガチャ',shop:'ショップ',inventory:'図鑑・売却',trade:'プレイヤー取引',leaderboard:'ランキング',history:'履歴',admin:'管理者パネル'})[id]||'ホーム';if(id==='admin'){$('adminLogin').classList.remove('hidden');$('adminTools').classList.add('hidden')}}
+function tab(id){
+ if(id==='admin'&&!serverAdmin){notice('この管理者アカウントでは管理機能を開けません');id='home'}
+ document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===id));
+ document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
+ $('pageTitle').textContent=({home:'ホーム',gacha:'ガチャ',shop:'ショップ',inventory:'図鑑・売却',trade:'プレイヤー取引',leaderboard:'ランキング',history:'履歴',admin:'管理者'})[id]||'ホーム';
+}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>tab(b.dataset.goto));
 function render(){if(!s.id)return;$('welcome').textContent='ようこそ、'+s.id+' さん';$('profileName').textContent=s.id;$('avatar').textContent=s.id[0].toUpperCase();$('homeCash').textContent=fmt(s.cash);$('homeItems').textContent=fmt(itemValue());$('homeTime').textContent=duration(s.playMs);$('invCash').textContent=fmt(s.cash);$('invValue').textContent=fmt(itemValue());$('invTotal').textContent=fmt(s.cash+itemValue());$('adminPlayerCount').textContent='1';$('adminHistoryCount').textContent=s.history.length;
  const list=$('inventoryList');list.innerHTML='';let any=false;for(const [id,q] of Object.entries(s.items)){if(q<1||!ITEMS[id])continue;any=true;const d=ITEMS[id],row=document.createElement('div');row.className='card';row.style.margin='10px 0';row.innerHTML='<div class="item"><div class="itemicon">'+d.icon+'</div><div class="iteminfo"><b>'+esc(d.name)+' × '+q+'</b><small><span class="rarity">'+d.rarity+'</span> · 売却 '+fmt(d.value)+'/個</small></div><button class="secondary" data-sell="'+id+'">1個売却</button></div>';list.appendChild(row)}if(!any)list.innerHTML='<div class="empty">まだアイテムがありません。ガチャを引いて集めよう！</div>';list.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>sell(b.dataset.sell));
@@ -103,7 +138,8 @@ setInterval(()=>{if(!s.id)return;const now=Date.now();s.playMs+=Math.max(0,now-l
 const SUPABASE_URL='https://sfcgjhpeldaetedoiabl.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_VfbezJK-oJxnRVIbN9uEYQ_29HXGbIl';
 const onlineClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let onlineUser=null, onlineBusy=false;
+let onlineUser=null, onlineBusy=false, serverAdmin=false, adminPlayers=[];
+const ADMIN_EMAIL="flangnorric.marshmallow36.8@gmail.com";
 function authMessage(t){const el=$('authMessage');if(el)el.textContent=t}
 function backendError(e){return e?.message||'接続に失敗しました。少し待って再試行してください。'}
 async function initOnline(){
@@ -147,7 +183,7 @@ async function loadOnlineState(){
   (inv.data||[]).forEach(x=>{s.items[x.item_id]=Number(x.quantity);s.known[x.item_id]=true});
   s.history=(h.data||[]).map(x=>({date:new Date(x.created_at).toLocaleString('ja-JP'),type:x.action,detail:x.detail,amount:(Number(x.amount)>0?'+':Number(x.amount)<0?'−':'')+fmt(Math.abs(Number(x.amount)))}));
   $('onboarding').classList.add('hidden');$('app').classList.remove('hidden');$('onlineBadge').textContent='● オンライン';$('side-note');
-  render();await updatePresence();await refreshTrades();await refreshOnlineStatus();
+  render();await updatePresence();await refreshTrades();await refreshOnlineStatus();await refreshAdminAccess();
  }catch(e){console.error(e);$('onboarding').classList.remove('hidden');$('app').classList.add('hidden');authMessage('データの読み込みに失敗しました：'+backendError(e))}
 }
 async function updatePresence(){if(!onlineUser)return;const {error}=await onlineClient.rpc('record_presence');if(error)console.warn('presence',error)}
@@ -297,54 +333,134 @@ renderRank=async function(metric){
  }catch(e){root.innerHTML='<tr><td colspan="3">ランキングを読み込めません：'+esc(backendError(e))+'</td></tr>'}
 };
 
+
 async function confirmAdminRole(){
+ if(!onlineUser||(onlineUser.email||'').trim().toLowerCase()!==ADMIN_EMAIL)return false;
  const {data,error}=await onlineClient.rpc('is_current_user_admin');
  if(error)throw error;
  return data===true;
 }
-$('adminLoginButton').onclick=async()=>{
- const msg=$('adminAuthMessage'),code=$('adminCode').value;
- if(!onlineUser){msg.textContent='先にメールのログインリンクからサインインしてください。';return}
- if(!code){msg.textContent='管理者コードを入力してください。';return}
- $('adminLoginButton').disabled=true;msg.textContent='サーバーで管理者コードを確認しています…';
+function setAdminNavVisible(show){
+ $('adminTabButton').classList.toggle('hidden',!show);
+ $('adminNavLabel').classList.toggle('hidden',!show);
+}
+function selectedAdminPlayer(){
+ const id=$('adminPlayerSelect').value;
+ return adminPlayers.find(p=>String(p.player_id)===String(id))||null;
+}
+function updateAdminTargetInfo(){
+ const p=selectedAdminPlayer();
+ $('adminTargetInfo').textContent=p
+  ? '選択中：'+p.player_name+' ／ 現在の所持コイン '+Number(p.coins||0).toLocaleString('ja-JP')+' C'
+  : '対象プレイヤーを選択してください。';
+ $('adminNewPlayerId').placeholder=p?'新しいID（現在：'+p.player_name+'）':'先に対象プレイヤーを選択してください';
+}
+async function refreshAdminPlayers(){
+ if(!serverAdmin)return;
+ const select=$('adminPlayerSelect');
+ select.disabled=true;
  try{
-  const {data,error}=await onlineClient.rpc('verify_admin_code',{p_code:code});
+  const {data,error}=await onlineClient.rpc('admin_list_players');
   if(error)throw error;
-  if(data!==true){msg.textContent='管理者コードが違います。';$('adminCode').value='';return}
-  if(!await confirmAdminRole()){msg.textContent='管理者権限を確認できませんでした。';return}
-  $('adminLogin').classList.add('hidden');$('adminTools').classList.remove('hidden');
-  $('adminTarget').value=s.id;$('adminCode').value='';notice('管理者コードを確認しました。');
- }catch(e){msg.textContent='認証に失敗しました：'+backendError(e)+'（Supabase側のSQL設定が必要な場合があります）'}
- finally{$('adminLoginButton').disabled=false}
-};
-$('giveMoney').onclick=async()=>{
- const n=Math.abs(Math.floor(Number($('adminMoney').value)));
- if(!Number.isSafeInteger(n)||n<1){notice('1以上の安全な整数を入力してください');return}
- $('giveMoney').disabled=true;
+  const previous=select.value;
+  adminPlayers=Array.isArray(data)?data:[];
+  select.replaceChildren();
+  const first=document.createElement('option');first.value='';first.textContent='プレイヤーを選択してください';select.appendChild(first);
+  adminPlayers.forEach(p=>{
+   const opt=document.createElement('option');
+   opt.value=p.player_id;
+   opt.textContent=String(p.player_name)+'（'+Number(p.coins||0).toLocaleString('ja-JP')+' C）';
+   select.appendChild(opt);
+  });
+  if(adminPlayers.some(p=>String(p.player_id)===previous))select.value=previous;
+  else if(onlineUser&&adminPlayers.some(p=>String(p.player_id)===String(onlineUser.id)))select.value=onlineUser.id;
+  $('adminPlayerCount').textContent=String(adminPlayers.length);
+  updateAdminTargetInfo();
+ }catch(e){
+  select.replaceChildren();const opt=document.createElement('option');opt.value='';opt.textContent='一覧を取得できません：'+backendError(e);select.appendChild(opt);
+  $('adminTargetInfo').textContent='Supabaseの管理者SQL設定とテーブルを確認してください。';
+ }finally{select.disabled=false}
+}
+async function refreshAdminAccess(){
+ const emailMatches=!!onlineUser&&(onlineUser.email||'').trim().toLowerCase()===ADMIN_EMAIL;
+ if(!emailMatches){
+  serverAdmin=false;setAdminNavVisible(false);
+  if(document.querySelector('#admin.active'))tab('home');
+  return;
+ }
  try{
-  if(!await confirmAdminRole()){notice('サーバーで管理者権限を確認できませんでした');return}
-  $('adminTarget').value=$('adminTarget').value.trim()||s.id;
-  const {error}=await onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:n,p_reason:'管理者によるコイン付与'});
-  if(error)throw error;
-  await refreshOnline();notice(fmt(n)+'コインを付与しました');
- }catch(e){notice('コイン付与に失敗しました：'+backendError(e))}
- finally{$('giveMoney').disabled=false}
-};
-$('takeMoney').onclick=async()=>{
- const n=Math.abs(Math.floor(Number($('adminMoney').value)));
- if(!Number.isSafeInteger(n)||n<1){notice('1以上の安全な整数を入力してください');return}
- $('takeMoney').disabled=true;
+  serverAdmin=await confirmAdminRole();
+  if(!serverAdmin)throw new Error('サーバー側で管理者権限が確認できませんでした。管理者SQLの設定が必要です。');
+  setAdminNavVisible(true);
+  $('adminAccountStatus').textContent='管理者として認証済み：'+onlineUser.email;
+  $('adminAccountStatus').className='warning success';
+  await refreshAdminPlayers();
+ }catch(e){
+  serverAdmin=false;setAdminNavVisible(false);
+  $('adminAccountStatus').textContent='管理者認証を確認できません：'+backendError(e);
+  $('adminAccountStatus').className='warning';
+  if(document.querySelector('#admin.active'))tab('home');
+ }
+}
+async function requireServerAdmin(){
+ if(!onlineUser||(onlineUser.email||'').trim().toLowerCase()!==ADMIN_EMAIL)throw new Error('このアカウントに管理者権限はありません。');
+ const {data,error}=await onlineClient.rpc('is_current_user_admin');
+ if(error)throw error;
+ if(data!==true){serverAdmin=false;setAdminNavVisible(false);throw new Error('サーバー側で管理者権限を確認できませんでした。');}
+ serverAdmin=true;setAdminNavVisible(true);
+}
+$('adminPlayerSelect').onchange=updateAdminTargetInfo;
+$('adminRefreshPlayers').onclick=async()=>{await requireServerAdmin();await refreshAdminPlayers();notice('プレイヤー一覧を更新しました');};
+$('adminRenamePlayer').onclick=async()=>{
+ const target=selectedAdminPlayer(),newId=$('adminNewPlayerId').value.trim();
+ if(!target){notice('変更するプレイヤーを一覧から選択してください');return}
+ if(!/^[\p{L}\p{N}_-]{3,20}$/u.test(newId)){notice('新しいIDは3〜20文字の英数字・日本語・_・-で入力してください');return}
+ const btn=$('adminRenamePlayer');btn.disabled=true;
  try{
-  if(!await confirmAdminRole()){notice('サーバーで管理者権限を確認できませんでした');return}
-  $('adminTarget').value=$('adminTarget').value.trim()||s.id;
-  const {error}=await onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:-n,p_reason:'管理者によるコイン差引'});
+  await requireServerAdmin();
+  const {data,error}=await onlineClient.rpc('admin_rename_player',{p_target_user_id:target.player_id,p_new_player_name:newId});
   if(error)throw error;
-  await refreshOnline();notice(fmt(n)+'コインを差し引きました');
- }catch(e){notice('コイン差引に失敗しました：'+backendError(e))}
- finally{$('takeMoney').disabled=false}
+  $('adminNewPlayerId').value='';
+  notice('プレイヤーIDを「'+String(data||newId)+'」に変更しました');
+  await refreshAdminPlayers();
+  if(String(target.player_id)===String(onlineUser.id))await loadOnlineState();
+ }catch(e){notice('ID変更に失敗しました：'+backendError(e))}
+ finally{btn.disabled=false}
 };
-$('kickPlayer').onclick=()=>notice('プレイヤー停止機能は、管理者権限をサーバー側で追加してから有効にします。');
-$('saveNote').onclick=()=>notice('管理メモのオンライン保存は次の更新で対応します。');
+async function adminAdjustCoins(amount,reason,button){
+ const target=selectedAdminPlayer(),n=Math.abs(Math.floor(Number($('adminMoney').value)));
+ if(!target){notice('対象プレイヤーを一覧から選択してください');return}
+ if(!Number.isSafeInteger(n)||n<1||n>1000000000000){notice('コイン数は1〜1,000,000,000,000の整数で入力してください');return}
+ button.disabled=true;
+ try{
+  await requireServerAdmin();
+  const {error}=await onlineClient.rpc('admin_adjust_player_coins',{p_target_user_id:target.player_id,p_amount:amount*n,p_reason:reason});
+  if(error)throw error;
+  notice(target.player_name+'に'+(amount>0?'コインを付与しました':'コインを差し引きました'));
+  await refreshAdminPlayers();
+  if(String(target.player_id)===String(onlineUser.id))await loadOnlineState();
+ }catch(e){notice('コイン操作に失敗しました：'+backendError(e))}
+ finally{button.disabled=false}
+}
+$('giveMoney').onclick=()=>adminAdjustCoins(1,'管理者によるコイン付与',$('giveMoney'));
+$('takeMoney').onclick=()=>adminAdjustCoins(-1,'管理者によるコイン差引',$('takeMoney'));
+$('adminGiveItem').onclick=async()=>{
+ const target=selectedAdminPlayer(),itemId=$('adminItemSelect').value,quantity=Number($('adminItemQuantity').value);
+ if(!target){notice('対象プレイヤーを一覧から選択してください');return}
+ if(!Number.isSafeInteger(quantity)||quantity<1||quantity>100000){notice('アイテム数は1〜100,000の整数で入力してください');return}
+ const btn=$('adminGiveItem');btn.disabled=true;
+ try{
+  await requireServerAdmin();
+  const {error}=await onlineClient.rpc('admin_grant_item',{p_target_user_id:target.player_id,p_item_id:itemId,p_quantity:quantity});
+  if(error)throw error;
+  const item=ITEMS[itemId];
+  notice(target.player_name+'に'+(item?.name||itemId)+'を'+quantity+'個配布しました');
+  await refreshAdminPlayers();
+  if(String(target.player_id)===String(onlineUser.id))await loadOnlineState();
+ }catch(e){notice('アイテム配布に失敗しました：'+backendError(e))}
+ finally{btn.disabled=false}
+};
+
 setInterval(()=>{if(onlineUser)updatePresence()},30000);
 setInterval(()=>{if(onlineUser)refreshOnline()},60000);
 setInterval(()=>{if(onlineUser){refreshTrades();refreshOnlineStatus()}},30000);
