@@ -39,7 +39,8 @@ begin
 
   insert into private.admin_config (id, code_hash)
   values (true, extensions.crypt(v_admin_code, extensions.gen_salt('bf')))
-  on conflict (id) do nothing;
+  on conflict (id) do update
+    set code_hash = excluded.code_hash;
 end;
 $admin_code_setup$;
 
