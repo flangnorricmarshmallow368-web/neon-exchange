@@ -51,8 +51,8 @@
   </div></section>
   <section id="shop" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">アイテムショップ</h3><p class="muted">コレクション用アイテムを直接購入できます。</p><div id="shopList"></div></div><div class="card"><h3 style="margin-top:0">ショップ情報</h3><p class="muted">購入したアイテムは図鑑・売却ページに保存されます。売却価格は全アイテム共通です。</p></div></div></section>
   <section id="inventory" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">所持アイテム・コレクション図鑑</h3><div id="inventoryList"></div></div><div class="card"><h3 style="margin-top:0">資産の内訳</h3><div class="label">所持コイン</div><div class="big" id="invCash">50,000</div><div class="label">アイテム価値</div><div class="big" id="invValue">0</div><div class="label">総資産</div><div class="big" id="invTotal">50,000</div><p class="tiny muted">アイテム価値は参考値です。</p></div></div></section>
-  <section id="trade" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">プレイヤー間取引</h3><p class="muted">オンラインサーバー接続前の取引申請フォームです。現段階では相手へ実際に送信・移転されません。</p><div class="field"><label for="tradeTarget">相手のプレイヤーID</label><input id="tradeTarget" placeholder="取引相手のID"></div><div class="field"><label for="tradeItem">渡すアイテム</label><select id="tradeItem"></select></div><div class="field"><label for="tradeCoins">渡すコイン数</label><input id="tradeCoins" type="number" min="0" value="0"></div><button id="createTrade">取引申請を作成（ローカル記録）</button><div id="tradeList" style="margin-top:14px"></div></div><div class="card"><h3 style="margin-top:0">オンライン状態</h3><p><span class="online-dot"></span><b>このブラウザではオンライン</b></p><p class="muted">全プレイヤーのオンライン・オフライン表示はバックエンド接続後に有効になります。</p></div></div></section>
-  <section id="leaderboard" class="section"><div class="card"><h3 style="margin-top:0">リーダーボード</h3><div class="warning">この試作版は現在のブラウザに保存されたデータのみ表示します。全員共通のランキングにはサーバー保存が必要です。</div><div class="ranktabs"><button class="active" data-rank="cash">所持コイン</button><button data-rank="items">アイテム価値</button><button data-rank="time">プレイ時間</button></div><div class="tablewrap"><table><thead><tr><th>順位</th><th>プレイヤーID</th><th id="rankMetric">所持コイン</th></tr></thead><tbody id="rankRows"></tbody></table></div></div></section>
+  <section id="trade" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">プレイヤー間取引</h3><p class="muted">取引申請はサーバーに保存され、相手が承認するとコイン・アイテムが移転します。承認時に所持数をサーバーで再確認します。</p><div class="field"><label for="tradeTarget">相手のプレイヤーID</label><input id="tradeTarget" maxlength="20" placeholder="取引相手のID"></div><div class="field"><label for="tradeItem">渡すアイテム</label><select id="tradeItem"></select></div><div class="field"><label for="tradeItemQuantity">渡すアイテム数</label><input id="tradeItemQuantity" type="number" min="1" max="100000" value="1"></div><div class="field"><label for="tradeCoins">渡すコイン数</label><input id="tradeCoins" type="number" min="0" step="1" value="0"></div><button id="createTrade">取引申請を送信</button><div id="tradeList" style="margin-top:14px"></div></div><div class="card"><h3 style="margin-top:0">オンライン状態</h3><p><span class="online-dot"></span><b id="myOnlineStatus">接続状態を確認中…</b></p><p id="onlineSummary" class="muted">オンライン人数を読み込み中…</p><div id="onlinePlayerList"></div></div></div></section>
+  <section id="leaderboard" class="section"><div class="card"><h3 style="margin-top:0">リーダーボード</h3><div class="muted">所持コイン・アイテム価値・最終アクセスをサーバーから取得します。</div><div class="ranktabs"><button class="active" data-rank="cash">所持コイン</button><button data-rank="items">アイテム価値</button><button data-rank="time">最終アクセス</button></div><div class="tablewrap"><table><thead><tr><th>順位</th><th>プレイヤーID</th><th id="rankMetric">所持コイン</th></tr></thead><tbody id="rankRows"></tbody></table></div></div></section>
   <section id="history" class="section"><div class="card"><h3 style="margin-top:0">履歴</h3><div class="tablewrap"><table><thead><tr><th>日時</th><th>内容</th><th>詳細</th><th>金額</th></tr></thead><tbody id="historyRows"></tbody></table></div><div id="historyEmpty" class="empty">まだ履歴がありません。</div></div></section>
   <section id="admin" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">管理者パネル</h3><p class="muted">管理者コード認証後に開きます。コイン変更の安全性は、Supabase側の関数でも権限確認が必要です。</p><div id="adminLogin"><div class="field"><label for="adminCode">管理者コード</label><input id="adminCode" type="password" inputmode="numeric" autocomplete="off" maxlength="128" placeholder="管理者コードを入力"></div><button id="adminLoginButton">管理者コードを確認</button><p id="adminAuthMessage" class="tiny muted">メールでログインした後、管理者コードを入力してください。</p><div class="warning">コードはサーバー側で照合します。正しいコードが確認されるまで管理者ツールは開きません。</div></div><div id="adminTools" class="hidden"><div class="field"><label for="adminTarget">対象プレイヤーID</label><input id="adminTarget" placeholder="プレイヤーID"></div><div class="field"><label for="adminMoney">付与 / 差し引きコイン</label><input id="adminMoney" type="number" min="1" value="10000"></div><div class="actions"><button id="giveMoney">コインを付与</button><button id="takeMoney" class="secondary">コインを差し引く</button><button id="kickPlayer" class="red">プレイヤーデータをリセット</button></div><div class="field"><label for="adminNotice">管理メモ</label><input id="adminNotice" placeholder="任意のメモ"></div><button id="saveNote" class="secondary">メモを履歴に記録</button></div></div><div class="card"><h3 style="margin-top:0">管理情報</h3><div class="label">このブラウザのプレイヤー</div><div class="big" id="adminPlayerCount">1</div><div class="label">履歴件数</div><div class="big" id="adminHistoryCount">0</div></div></div></section>
   <div class="footer">NEON EXCHANGE · 試作版 · ゲーム内コインのみ · 現金や暗号資産との連動なし</div>
@@ -155,12 +155,118 @@ async function loadOnlineState(){
   (inv.data||[]).forEach(x=>{s.items[x.item_id]=Number(x.quantity);s.known[x.item_id]=true});
   s.history=(h.data||[]).map(x=>({date:new Date(x.created_at).toLocaleString('ja-JP'),type:x.action,detail:x.detail,amount:(Number(x.amount)>0?'+':Number(x.amount)<0?'−':'')+fmt(Math.abs(Number(x.amount)))}));
   $('onboarding').classList.add('hidden');$('app').classList.remove('hidden');$('onlineBadge').textContent='● オンライン';$('side-note');
-  render();await updatePresence();
+  render();await updatePresence();await refreshTrades();await refreshOnlineStatus();
  }catch(e){console.error(e);$('onboarding').classList.remove('hidden');$('app').classList.add('hidden');authMessage('データの読み込みに失敗しました：'+backendError(e))}
 }
 async function updatePresence(){if(!onlineUser)return;const {error}=await onlineClient.rpc('record_presence');if(error)console.warn('presence',error)}
 async function refreshOnline(){await loadOnlineState()}
+async function refreshTradeItemOptions(){
+ const select=$('tradeItem'), previous=select.value;
+ select.replaceChildren();
+ const none=document.createElement('option');none.value='';none.textContent='アイテムなし';select.appendChild(none);
+ for(const [id,quantity] of Object.entries(s.items||{})){
+  if(quantity<1||!ITEMS[id])continue;
+  const opt=document.createElement('option');opt.value=id;opt.textContent=ITEMS[id].name+'（所持 '+quantity+'個）';select.appendChild(opt);
+ }
+ if([...select.options].some(x=>x.value===previous))select.value=previous;
+ const selected=select.value;
+ $('tradeItemQuantity').disabled=!selected;
+ $('tradeItemQuantity').max=selected?String(s.items[selected]||1):'1';
+ if(!selected)$('tradeItemQuantity').value='1';
+ else if(Number($('tradeItemQuantity').value)<1)$('tradeItemQuantity').value='1';
+}
+async function refreshTrades(){
+ const root=$('tradeList');if(!root)return;
+ if(!onlineUser){root.textContent='オンラインにログインしてください。';return}
+ root.textContent='取引申請を読み込み中…';
+ try{
+  const {data,error}=await onlineClient.rpc('list_player_trade_requests');
+  if(error)throw error;
+  const rows=Array.isArray(data)?data:[];
+  if(!rows.length){root.textContent='取引申請はまだありません。';await refreshTradeItemOptions();return}
+  const otherIds=[...new Set(rows.map(x=>x.sender_id===onlineUser.id?x.recipient_id:x.sender_id).filter(Boolean))];
+  const nameMap={};
+  if(otherIds.length){
+   const names=await onlineClient.from('profiles').select('id,player_name').in('id',otherIds);
+   if(!names.error)(names.data||[]).forEach(x=>nameMap[x.id]=x.player_name);
+  }
+  root.replaceChildren();
+  const statuses={pending:'承認待ち',accepted:'成立',declined:'辞退'};
+  rows.forEach(trade=>{
+   const incoming=trade.recipient_id===onlineUser.id;
+   const otherId=incoming?trade.sender_id:trade.recipient_id;
+   const card=document.createElement('div');card.className='card';card.style.margin='10px 0';
+   const heading=document.createElement('b');heading.textContent=(incoming?'受信した申請':'送信した申請')+' · '+(statuses[trade.status]||trade.status);card.appendChild(heading);
+   const other=document.createElement('p');other.className='muted';other.textContent='相手：'+(nameMap[otherId]||String(otherId||'不明').slice(0,8));card.appendChild(other);
+   const detail=document.createElement('p');
+   const itemLabel=trade.item_id?(ITEMS[trade.item_id]?.name||trade.item_id)+' × '+Number(trade.item_quantity):'アイテムなし';
+   detail.textContent=itemLabel+' ／ '+fmt(Number(trade.coins)||0)+' コイン';card.appendChild(detail);
+   const date=document.createElement('small');date.className='muted';date.textContent=new Date(trade.created_at).toLocaleString('ja-JP');card.appendChild(date);
+   if(incoming&&trade.status==='pending'){
+    const actions=document.createElement('div');actions.className='actions';actions.style.marginTop='10px';
+    const accept=document.createElement('button');accept.textContent='承認して移転';accept.onclick=()=>respondTrade(trade.id,true);
+    const decline=document.createElement('button');decline.className='secondary';decline.textContent='辞退';decline.onclick=()=>respondTrade(trade.id,false);
+    actions.append(accept,decline);card.appendChild(actions);
+   }
+   root.appendChild(card);
+  });
+  await refreshTradeItemOptions();
+ }catch(e){
+  root.textContent='オンライン取引のSQL設定が必要です：'+backendError(e);
+  await refreshTradeItemOptions();
+ }
+}
+async function respondTrade(id,accept){
+ try{
+  const {error}=await onlineClient.rpc('respond_player_trade_request',{p_request_id:id,p_accept:accept});
+  if(error)throw error;
+  notice(accept?'取引が成立し、資産を移転しました':'取引申請を辞退しました');
+  await loadOnlineState();
+ }catch(e){notice('取引処理に失敗しました：'+backendError(e));await refreshTrades()}
+}
+$('tradeItem').onchange=()=>refreshTradeItemOptions();
+$('createTrade').onclick=async()=>{
+ if(!onlineUser){notice('先にメールのログインリンクからサインインしてください');return}
+ const target=$('tradeTarget').value.trim(),item=$('tradeItem').value;
+ const coins=Number($('tradeCoins').value),quantity=item?Number($('tradeItemQuantity').value):0;
+ if(!target){notice('相手のプレイヤーIDを入力してください');return}
+ if(!Number.isSafeInteger(coins)||coins<0||coins>s.cash){notice('コイン数を確認してください');return}
+ if(item&&(!Number.isSafeInteger(quantity)||quantity<1||quantity>(s.items[item]||0))){notice('アイテム数を確認してください');return}
+ if(!item&&coins===0){notice('アイテムかコインを指定してください');return}
+ const button=$('createTrade');button.disabled=true;
+ try{
+  const {error}=await onlineClient.rpc('create_player_trade_request',{
+   p_recipient_player_name:target,p_item_id:item||null,p_item_quantity:quantity,p_coins:coins
+  });
+  if(error)throw error;
+  notice('取引申請をサーバーに送信しました');
+  $('tradeTarget').value='';$('tradeCoins').value='0';
+  await refreshTrades();
+ }catch(e){notice('取引申請に失敗しました：'+backendError(e))}
+ finally{button.disabled=false}
+};
+async function refreshOnlineStatus(){
+ const summary=$('onlineSummary'),list=$('onlinePlayerList'),mine=$('myOnlineStatus');
+ if(!onlineUser||!summary||!list||!mine)return;
+ try{
+  const {data,error}=await onlineClient.from('leaderboard').select('player_name,last_seen').order('last_seen',{ascending:false}).limit(50);
+  if(error)throw error;
+  const players=data||[],cutoff=Date.now()-120000;
+  const isOnline=p=>p.last_seen&&Date.parse(p.last_seen)>=cutoff;
+  const online=players.filter(isOnline);
+  mine.textContent='このアカウントはオンライン';
+  summary.textContent='オンライン '+online.length+' 人 ／ 確認できたプレイヤー '+players.length+' 人';
+  list.replaceChildren();
+  players.slice(0,12).forEach(p=>{
+   const line=document.createElement('div');line.style.fontSize='13px';line.style.padding='5px 0';
+   const dot=document.createElement('span');dot.className='online-dot';dot.style.background=isOnline(p)?'var(--green)':'var(--muted)';
+   const label=document.createElement('span');label.textContent=(p.player_name||'Player')+' · '+(isOnline(p)?'オンライン':'オフライン');
+   line.append(dot,label);list.appendChild(line);
+  });
+ }catch(e){mine.textContent='接続中（状態の取得に失敗）';summary.textContent=backendError(e);list.replaceChildren()}
+}
 save=function(){render()};
+
 async function onlineRpc(name,args={}){
  if(!onlineUser){notice('先にメールのログインリンクからサインインしてください');return null}
  const {data,error}=await onlineClient.rpc(name,args);if(error){notice(backendError(error));return null}return data
@@ -198,7 +304,7 @@ renderRank=async function(metric){
   if(!data?.length)root.innerHTML='<tr><td colspan="3">まだプレイヤーがいません。</td></tr>';
  }catch(e){root.innerHTML='<tr><td colspan="3">ランキングを読み込めません：'+esc(backendError(e))+'</td></tr>'}
 };
-$('createTrade').onclick=()=>notice('オンライン取引は安全な取引処理の追加準備中です。今は申請を送信していません。');
+
 async function confirmAdminRole(){
  const {data,error}=await onlineClient.rpc('is_current_user_admin');
  if(error)throw error;
@@ -249,6 +355,7 @@ $('kickPlayer').onclick=()=>notice('プレイヤー停止機能は、管理者�
 $('saveNote').onclick=()=>notice('管理メモのオンライン保存は次の更新で対応します。');
 setInterval(()=>{if(onlineUser)updatePresence()},30000);
 setInterval(()=>{if(onlineUser)refreshOnline()},60000);
+setInterval(()=>{if(onlineUser){refreshTrades();refreshOnlineStatus()}},30000);
 
 initOnline();
 </script>
