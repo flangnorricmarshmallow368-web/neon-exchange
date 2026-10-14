@@ -139,7 +139,6 @@ const SUPABASE_URL='https://sfcgjhpeldaetedoiabl.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_VfbezJK-oJxnRVIbN9uEYQ_29HXGbIl';
 const onlineClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let onlineUser=null, onlineBusy=false, serverAdmin=false, adminPlayers=[];
-const ADMIN_EMAIL="flangnorric.marshmallow36.8@gmail.com";
 function authMessage(t){const el=$('authMessage');if(el)el.textContent=t}
 function backendError(e){return e?.message||'接続に失敗しました。少し待って再試行してください。'}
 async function initOnline(){
@@ -335,7 +334,7 @@ renderRank=async function(metric){
 
 
 async function confirmAdminRole(){
- if(!onlineUser||(onlineUser.email||'').trim().toLowerCase()!==ADMIN_EMAIL)return false;
+ if(!onlineUser)return false;
  const {data,error}=await onlineClient.rpc('is_current_user_admin');
  if(error)throw error;
  return data===true;
@@ -382,8 +381,7 @@ async function refreshAdminPlayers(){
  }finally{select.disabled=false}
 }
 async function refreshAdminAccess(){
- const emailMatches=!!onlineUser&&(onlineUser.email||'').trim().toLowerCase()===ADMIN_EMAIL;
- if(!emailMatches){
+ if(!onlineUser){
   serverAdmin=false;setAdminNavVisible(false);
   if(document.querySelector('#admin.active'))tab('home');
   return;
@@ -403,7 +401,7 @@ async function refreshAdminAccess(){
  }
 }
 async function requireServerAdmin(){
- if(!onlineUser||(onlineUser.email||'').trim().toLowerCase()!==ADMIN_EMAIL)throw new Error('このアカウントに管理者権限はありません。');
+ if(!onlineUser)throw new Error('先にメールのログインリンクからサインインしてください。');
  const {data,error}=await onlineClient.rpc('is_current_user_admin');
  if(error)throw error;
  if(data!==true){serverAdmin=false;setAdminNavVisible(false);throw new Error('サーバー側で管理者権限を確認できませんでした。');}
