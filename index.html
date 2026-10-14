@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON EXCHANGE — Virtual Tycoon</title>
+<style>
+:root{--bg:#080b16;--panel:#12182a;--panel2:#18213a;--line:#2a3654;--text:#f0f3ff;--muted:#9ba8c7;--purple:#a66bff;--green:#4ce0a0;--red:#ff668d;--gold:#f5c66d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% -5%,#271343 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:11px 14px;font-weight:750;background:var(--purple);color:white}button.secondary{background:#242f4b;border:1px solid var(--line)}button.green{background:#167e62}button.red{background:#8c2849}button:disabled{opacity:.4;cursor:not-allowed}input,select{width:100%;background:#0b1020;border:1px solid #34415f;border-radius:10px;padding:11px;color:#fff;outline:none}input:focus,select:focus{border-color:var(--purple)}
+.hidden{display:none!important}.shell{display:grid;grid-template-columns:225px minmax(0,1fr);min-height:100vh}.sidebar{padding:20px 13px;background:#0b0f1e;border-right:1px solid var(--line)}.brand{display:flex;gap:10px;align-items:center;font-weight:900;font-size:17px;margin:0 8px 28px}.logo{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,#7441ff,#c07bff);font-size:23px}.nav{display:grid;gap:7px}.nav button{background:transparent;text-align:left;color:var(--muted);border:1px solid transparent}.nav button.active,.nav button:hover{background:#1b1933;color:#fff;border-color:#49336e}.nav small{margin:18px 10px 4px;color:#7885a6}.side-note{font-size:12px;color:#7e8aaa;margin:28px 9px}.main{padding:26px;max-width:1500px;width:100%;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.top h1{font-size:25px;margin:0}.muted,.label{color:var(--muted)}.label{font-size:13px}.pill{border:1px solid #49336e;background:#1c1730;color:#d1b8ff;border-radius:999px;padding:5px 10px;font-size:12px;white-space:nowrap}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.card{background:linear-gradient(145deg,#151c31,#101526);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}.wide{grid-column:span 2}.big{font-size:28px;font-weight:850;letter-spacing:-.5px;margin:5px 0}.section{display:none}.section.active{display:block}.profile{display:flex;align-items:center;gap:9px}.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#30234f;font-weight:800}.asset-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.asset-name{display:flex;align-items:center;gap:12px}.coin{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:#2b214a;color:#d8c0ff;font-size:24px}.chart{height:170px;width:100%;margin-top:10px;background:linear-gradient(180deg,#a66bff12,transparent);border-radius:10px}.field{display:grid;gap:6px;margin:11px 0}.field label{font-size:13px;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions>*{flex:1}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px}.item{display:flex;align-items:center;gap:12px}.itemicon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#24203c;font-size:23px}.iteminfo{flex:1;min-width:0}.iteminfo b{display:block}.iteminfo small{color:var(--muted)}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:540px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.empty{text-align:center;padding:22px;color:var(--muted)}.warning{border:1px solid #5d4a28;background:#211c13;color:#e6d1a5;padding:12px;border-radius:12px;font-size:13px;margin:12px 0}.success{color:var(--green)}.negative{color:var(--red)}.positive{color:var(--green)}.ranktabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.ranktabs button{background:#202a43}.ranktabs button.active{background:var(--purple)}.notice{position:fixed;bottom:20px;right:20px;background:#242f4b;border:1px solid #526080;border-radius:12px;padding:12px 16px;display:none;max-width:340px;z-index:10}.formbox{max-width:540px;margin:6vh auto;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:27px}.formbox h2{margin-top:0}.footer{color:#687797;font-size:12px;margin-top:24px}.tiny{font-size:12px}.timer{color:var(--gold);font-weight:750}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{border:0;border-bottom:1px solid var(--line);padding:12px}.brand{margin:0 8px 10px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap}.nav small,.side-note{display:none}.main{padding:14px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.top h1{font-size:21px}.twocol{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="onboarding" class="formbox">
+ <div class="brand" style="margin:0 0 20px"><span class="logo">✦</span><span>NEON EXCHANGE<small style="display:block;color:var(--muted);font-size:11px;font-weight:500">VIRTUAL TYCOON GAME</small></span></div>
+ <h2>プレイヤー登録</h2><p class="muted">ゲーム内通貨で賭け倍率に挑戦し、アイテムを集めて資産ランキング上位を目指そう。</p>
+ <div class="warning">試作版はこのブラウザ内だけにデータを保存します。メールアドレスは入力しないでください。無料公開後に全プレイヤーの同期・管理をするには、安全なサーバーとデータベースが必要です。</div>
+ <div class="field"><label for="newId">プレイヤーIDを決めてください（3〜20文字）</label><input id="newId" maxlength="20" placeholder="例：NeonPlayer01"></div>
+ <button id="createPlayer" style="width:100%">決定してゲーム開始</button>
+ <p class="tiny muted">新規プレイヤーはゲーム内通貨 ¥50,000 からスタートします。</p>
+</div>
+<div id="app" class="shell hidden">
+ <aside class="sidebar">
+  <div class="brand"><span class="logo">✦</span><span>NEON EXCHANGE</span></div>
+  <nav class="nav">
+   <button class="active" data-tab="home">⌂　ホーム</button>
+   <button data-tab="multiplier">✧　倍率ゲーム</button>
+   <button data-tab="shop">▣　アイテムショップ</button>
+   <button data-tab="inventory">◇　アイテム・取引</button>
+   <button data-tab="leaderboard">♛　リーダーボード</button>
+   <button data-tab="history">◷　履歴</button>
+   <small>管理</small>
+   <button data-tab="admin">⚙　管理者パネル</button>
+  </nav>
+  <div class="side-note">DEMO GAME<br>ゲーム内通貨のみ<br>現金・暗号資産とは無関係</div>
+ </aside>
+ <main class="main">
+  <header class="top"><div><div id="welcome" class="muted">ようこそ</div><h1 id="pageTitle">ホーム</h1></div><div class="profile"><span class="pill">● デモ通貨</span><div class="avatar" id="avatar">N</div><b id="profileName">Player</b></div></header>
+  <section id="home" class="section active">
+   <div class="grid">
+    <div class="card"><div class="label">所持金</div><div class="big" id="homeCash">¥50,000</div><div class="muted">使えるゲーム内通貨</div></div>
+    <div class="card"><div class="label">アイテム価値</div><div class="big" id="homeItems">¥0</div><div class="muted">保有アイテムの合計価値</div></div>
+    <div class="card"><div class="label">プレイ時間</div><div class="big" id="homeTime">0分</div><div class="muted">このプレイヤーの累計</div></div>
+    <div class="card wide"><div class="asset-head"><div><h3 style="margin:0">今日のチャンス</h3><div class="muted">倍率を選んでゲーム内通貨を増やそう</div></div><span class="pill">最大100倍</span></div><div class="big" style="color:#c5a0ff">0.1× — 100×</div><p class="muted">賭け金と倍率を自分で設定。結果はランダムで、勝利確率は倍率が高いほど低くなります。</p><button data-goto="multiplier">倍率ゲームを開く</button></div>
+    <div class="card"><h3 style="margin-top:0">おすすめアイテム</h3><div class="item"><div class="itemicon">⚡</div><div class="iteminfo"><b>5分間お金2倍</b><small>価格 ¥30,000</small></div></div><button class="secondary" style="width:100%;margin-top:14px" data-goto="shop">ショップへ</button></div>
+   </div>
+  </section>
+  <section id="multiplier" class="section">
+   <div class="grid">
+    <div class="card wide"><h3 style="margin-top:0">倍率ゲーム</h3><p class="muted">賭け金を入力し、0.1倍〜100倍の倍率を選んで挑戦。勝つと賭け金×倍率が払い戻され、負けると賭け金を失います。</p>
+     <div class="twocol"><div class="field"><label for="betAmount">賭け金（円）</label><input id="betAmount" type="number" min="1" step="1" value="1000"></div><div class="field"><label for="multiplierSelect">倍率</label><select id="multiplierSelect"><option value="0.1">0.1倍</option><option value="0.5">0.5倍</option><option value="1">1倍</option><option value="1.5">1.5倍</option><option value="2" selected>2倍</option><option value="3">3倍</option><option value="5">5倍</option><option value="10">10倍</option><option value="25">25倍</option><option value="50">50倍</option><option value="100">100倍</option></select></div></div>
+     <div class="card" style="background:#0b1020;margin:10px 0"><div class="label">勝利時の払い戻し（賭け金を含む）</div><div class="big" id="potentialWin">¥2,000</div><div class="muted" id="chanceLabel">デモ勝率：50.0%</div></div>
+     <button id="playBet" style="width:100%">この倍率に挑戦</button>
+     <div id="betResult" class="warning">結果はここに表示されます。デモゲームです。</div>
+    </div>
+    <div class="card"><h3 style="margin-top:0">遊び方</h3><p class="muted">倍率が高いほど勝率は下がります。勝利時の払い戻しは賭け金×倍率です。</p><p class="muted">0.1倍や0.5倍は勝っても賭け金より少ない払い戻しになります。</p><div class="warning">このゲームは架空の通貨のみ。現金の入金・出金はありません。</div></div>
+   </div>
+  </section>
+  <section id="shop" class="section"><div class="grid">
+   <div class="card wide"><h3 style="margin-top:0">アイテムショップ</h3><p class="muted">アイテムを購入すると、一定時間、倍率ゲームで勝ったときの払い戻しが2倍になります。効果は重複しません。</p>
+    <div class="card" style="margin:12px 0"><div class="item"><div class="itemicon">⚡</div><div class="iteminfo"><b>5分間 お金2倍</b><small>効果：勝利時払い戻し×2 · 価格 ¥30,000</small></div><button data-buy="boost5">購入</button></div></div>
+    <div class="card" style="margin:12px 0"><div class="item"><div class="itemicon">🌌</div><div class="iteminfo"><b>1時間 お金2倍</b><small>効果：勝利時払い戻し×2 · 価格 ¥4,000,000</small></div><button data-buy="boost60">購入</button></div></div>
+    <div class="card" style="margin:12px 0"><div class="item"><div class="itemicon">💎</div><div class="iteminfo"><b>ネオン宝石</b><small>コレクションアイテム · 価値 ¥75,000 · 売買可能</small></div><button data-buy="gem">購入</button></div></div>
+    <div class="card" style="margin:12px 0"><div class="item"><div class="itemicon">👑</div><div class="iteminfo"><b>ゴールデンクラウン</b><small>レアアイテム · 価値 ¥250,000 · 売買可能</small></div><button data-buy="crown">購入</button></div></div>
+   </div>
+   <div class="card"><h3 style="margin-top:0">有効なブースト</h3><div id="boostStatus" class="muted">現在有効なブーストはありません。</div><div class="warning">ブーストは残り時間がある間のみ有効です。</div></div>
+  </div></section>
+  <section id="inventory" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">所持アイテム・取引</h3><div id="inventoryList"></div></div><div class="card"><h3 style="margin-top:0">資産の内訳</h3><div class="label">所持金</div><div class="big" id="invCash">¥50,000</div><div class="label">アイテム価値合計</div><div class="big" id="invValue">¥0</div><div class="label">総資産</div><div class="big" id="invTotal">¥50,000</div></div></div></section>
+  <section id="leaderboard" class="section"><div class="card"><h3 style="margin-top:0">リーダーボード</h3><div class="warning">試作版では、このブラウザに保存されたプレイヤーだけが対象です。公開版で全員共通のランキングを作るにはサーバー保存が必要です。</div><div class="ranktabs"><button class="active" data-rank="cash">所持金</button><button data-rank="items">アイテム価値</button><button data-rank="time">プレイ時間</button></div><div class="tablewrap"><table><thead><tr><th>順位</th><th>プレイヤーID</th><th id="rankMetric">所持金</th></tr></thead><tbody id="rankRows"></tbody></table></div></div></section>
+  <section id="history" class="section"><div class="card"><h3 style="margin-top:0">ゲーム履歴</h3><div class="tablewrap"><table><thead><tr><th>日時</th><th>内容</th><th>倍率/数量</th><th>金額</th></tr></thead><tbody id="historyRows"></tbody></table></div><div id="historyEmpty" class="empty">まだ履歴がありません。</div></div></section>
+  <section id="admin" class="section">
+   <div class="grid">
+    <div class="card wide"><h3 style="margin-top:0">管理者パネル</h3><p class="muted">管理者認証後に、このブラウザのプレイヤーデータを管理します。</p>
+     <div id="adminLogin"><div class="field"><label for="adminPassword">管理者パスワード</label><input id="adminPassword" type="password" placeholder="管理者パスワード"></div><button id="adminLoginButton">決定して開く</button><div class="warning">注意：この静的デモの認証はブラウザ側だけなので、公開サイトでは秘密を守れません。公開版の管理者権限はサーバー側で実装する必要があります。</div></div>
+     <div id="adminTools" class="hidden">
+      <div class="field"><label for="adminTarget">対象プレイヤーID</label><input id="adminTarget" placeholder="このブラウザのプレイヤーID"></div>
+      <div class="field"><label for="adminMoney">付与 / 差し引き金額（円）</label><input id="adminMoney" type="number" min="1" step="1" value="10000"></div>
+      <div class="actions"><button id="giveMoney">通貨を付与</button><button id="takeMoney" class="secondary">通貨を差し引く</button><button id="kickPlayer" class="red">プレイヤーをキック</button></div>
+      <div class="field"><label for="adminNotice">管理メモ（ローカル記録）</label><input id="adminNotice" placeholder="任意のメモ"></div><button id="saveNote" class="secondary">メモを履歴に記録</button>
+      <div class="warning">チート検知・キック・通貨付与を本当に全プレイヤーに適用するには、サーバーでの認証、権限チェック、データベースが必要です。現在の試作はこのブラウザのデータのみ対象です。</div>
+     </div>
+    </div>
+    <div class="card"><h3 style="margin-top:0">管理サマリー</h3><div class="label">このブラウザのプレイヤー</div><div class="big" id="adminPlayerCount">1</div><div class="label">取引/ゲーム履歴</div><div class="big" id="adminHistoryCount">0</div><div class="muted">全ユーザーの一覧はサーバー連携後に利用できます。</div></div>
+   </div>
+  </section>
+  <div class="footer">NEON EXCHANGE · デモ専用 · ゲーム内通貨のみ · 実際のお金や暗号資産とは連動しません</div>
+ </main>
+</div>
+<div id="notice" class="notice"></div>
+<script>
+const $=id=>document.getElementById(id), KEY='neonExchangeTycoon_v2';
+const ITEM_DEFS={
+ boost5:{name:'5分間 お金2倍',icon:'⚡',price:30000,value:30000,kind:'boost',duration:5*60*1000},
+ boost60:{name:'1時間 お金2倍',icon:'🌌',price:4000000,value:4000000,kind:'boost',duration:60*60*1000},
+ gem:{name:'ネオン宝石',icon:'💎',price:50000,value:75000,kind:'collectible'},
+ crown:{name:'ゴールデンクラウン',icon:'👑',price:180000,value:250000,kind:'collectible'}
+};
+let s={id:'',cash:50000,items:{},history:[],playMs:0,lastSeen:Date.now(),boostUntil:0,boostName:'',kicked:false};
+function fmt(n){return '¥'+Math.floor(n).toLocaleString('ja-JP')}
+function showNotice(t){$('notice').textContent=t;$('notice').style.display='block';setTimeout(()=>$('notice').style.display='none',2800)}
+function save(){localStorage.setItem(KEY,JSON.stringify(s));render()}
+function load(){try{let v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&v.id)s={...s,...v}}catch(e){}}
+function addHistory(type,detail,amount){s.history.push({date:new Date().toLocaleString('ja-JP'),type,detail,amount:fmt(amount)});if(s.history.length>300)s.history=s.history.slice(-300)}
+function itemValue(){return Object.entries(s.items).reduce((sum,[id,q])=>sum+(ITEM_DEFS[id]?.value||0)*q,0)}
+function boostActive(){return s.boostUntil>Date.now()}
+function render(){if(!s.id)return;
+ $('welcome').textContent='ようこそ、'+s.id+' さん';$('profileName').textContent=s.id;$('avatar').textContent=s.id[0].toUpperCase();
+ $('homeCash').textContent=fmt(s.cash);$('homeItems').textContent=fmt(itemValue());$('homeTime').textContent=duration(s.playMs);
+ $('invCash').textContent=fmt(s.cash);$('invValue').textContent=fmt(itemValue());$('invTotal').textContent=fmt(s.cash+itemValue());
+ $('boostStatus').innerHTML=boostActive()?`<span class="timer">${escapeHtml(s.boostName||'お金2倍')}：残り ${duration(s.boostUntil-Date.now())}</span>`:'現在有効なブーストはありません。';
+ let il=$('inventoryList');il.innerHTML='';let found=false;
+ for(const [id,q] of Object.entries(s.items)){if(q<=0)continue;found=true;const d=ITEM_DEFS[id];const row=document.createElement('div');row.className='card';row.style.margin='10px 0';row.innerHTML=`<div class="item"><div class="itemicon">${d.icon}</div><div class="iteminfo"><b>${escapeHtml(d.name)} × ${q}</b><small>価値：${fmt(d.value)} / 個</small></div>${d.kind==='collectible'?`<button class="secondary" data-sell-item="${id}">1個売却</button>`:''}</div>`;il.appendChild(row)}
+ if(!found)il.innerHTML='<div class="empty">アイテムをまだ持っていません。ショップで購入しよう！</div>';
+ il.querySelectorAll('[data-sell-item]').forEach(b=>b.onclick=()=>sellItem(b.dataset.sellItem));
+ let hr=$('historyRows');hr.innerHTML='';[...s.history].reverse().forEach(h=>{let tr=document.createElement('tr');[h.date,h.type,h.detail,h.amount].forEach(x=>{let td=document.createElement('td');td.textContent=x;tr.appendChild(td)});hr.appendChild(tr)});$('historyEmpty').style.display=s.history.length?'none':'block';
+ $('adminPlayerCount').textContent='1';$('adminHistoryCount').textContent=s.history.length;
+ renderRank();updateBetPreview();
+}
+function duration(ms){ms=Math.max(0,Math.floor(ms/1000));if(ms<3600)return Math.floor(ms/60)+'分 '+(ms%60)+'秒';return Math.floor(ms/3600)+'時間 '+Math.floor(ms%3600/60)+'分'}
+function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('createPlayer').onclick=()=>{let id=$('newId').value.trim();if(!/^[\p{L}\p{N}_-]{3,20}$/u.test(id)){showNotice('IDは3〜20文字で入力してください');return}if(localStorage.getItem(KEY)){showNotice('このブラウザには既存データがあります。既存データを使ってください');return}s={id,cash:50000,items:{},history:[],playMs:0,lastSeen:Date.now(),boostUntil:0,boostName:'',kicked:false};addHistory('登録','初期所持金',50000);save();$('onboarding').classList.add('hidden');$('app').classList.remove('hidden');showNotice('ゲーム開始！初期所持金は¥50,000です')};
+function init(){load();if(s.id&&!s.kicked){$('onboarding').classList.add('hidden');$('app').classList.remove('hidden');render()}else if(s.kicked){localStorage.removeItem(KEY);s={id:'',cash:50000,items:{},history:[],playMs:0,lastSeen:Date.now(),boostUntil:0,boostName:'',kicked:false}}}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>tab(b.dataset.goto));
+function tab(id){document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));$('pageTitle').textContent=({home:'ホーム',multiplier:'倍率ゲーム',shop:'アイテムショップ',inventory:'アイテム・取引',leaderboard:'リーダーボード',history:'履歴',admin:'管理者パネル'})[id]||'ホーム';if(id==='admin'){$('adminLogin').classList.remove('hidden');$('adminTools').classList.add('hidden')}}
+function updateBetPreview(){if(!$('betAmount'))return;let bet=Math.max(0,Number($('betAmount').value)||0),m=Number($('multiplierSelect').value)||1;$('potentialWin').textContent=fmt(bet*m);$('chanceLabel').textContent='デモ勝率：約'+(Math.min(95,Math.max(0,95/m))).toFixed(1)+'%';}
+$('betAmount').oninput=updateBetPreview;$('multiplierSelect').onchange=updateBetPreview;
+$('playBet').onclick=()=>{let bet=Math.floor(Number($('betAmount').value)),m=Number($('multiplierSelect').value);if(!Number.isFinite(bet)||bet<1||bet>s.cash){showNotice('賭け金は所持金以内で入力してください');return}if(![.1,.5,1,1.5,2,3,5,10,25,50,100].includes(m)){showNotice('倍率を選び直してください');return}
+ s.cash-=bet;let chance=Math.min(.95,.95/m),win=Math.random()<chance, payout=win?Math.floor(bet*m*(boostActive()?2:1)):0;if(win)s.cash+=payout;let net=payout-bet;addHistory(win?'倍率ゲーム：勝利':'倍率ゲーム：敗北',m+'倍 / '+(win?'勝利':'敗北'),net);save();$('betResult').className='warning '+(win?'success':'negative');$('betResult').textContent=win?`勝利！ ${m}倍で ${fmt(payout)} を払い戻しました${boostActive()?'（ブースト2倍適用）':''}。差引 ${net>=0?'+':''}${fmt(net)}。`:`残念、負けました。賭け金 ${fmt(bet)} を失いました。`;};
+document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buy(b.dataset.buy));
+function buy(id){let d=ITEM_DEFS[id];if(!d)return;if(s.cash<d.price){showNotice('所持金が足りません');return}if(d.kind==='boost'&&boostActive()){showNotice('ブースト効果中は新しいブーストを購入できません');return}s.cash-=d.price;s.items[id]=(s.items[id]||0)+1;if(d.kind==='boost'){s.boostUntil=Date.now()+d.duration;s.boostName=d.name}addHistory('アイテム購入',d.name, -d.price);save();showNotice(d.name+'を購入しました')}
+function sellItem(id){let d=ITEM_DEFS[id];if(!d||d.kind!=='collectible'||!s.items[id])return;s.items[id]--;if(s.items[id]<=0)delete s.items[id];s.cash+=d.value;addHistory('アイテム売却',d.name,d.value);save();showNotice(d.name+'を売却しました')}
+document.querySelectorAll('[data-rank]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-rank]').forEach(x=>x.classList.toggle('active',x===b));renderRank(b.dataset.rank)});
+function renderRank(metric){metric=metric||document.querySelector('[data-rank].active')?.dataset.rank||'cash';$('rankMetric').textContent=({cash:'所持金',items:'アイテム価値',time:'プレイ時間'})[metric];let val=metric==='cash'?s.cash:metric==='items'?itemValue():s.playMs;let tr=document.createElement('tr');[1,s.id,metric==='cash'?fmt(val):metric==='items'?fmt(val):duration(val)].forEach(x=>{let td=document.createElement('td');td.textContent=x;tr.appendChild(td)});$('rankRows').replaceChildren(tr)}
+// Demo-only admin passphrase. Client-side secrets are not secure; replace with server auth before public use.
+const DEMO_ADMIN_PASS='0189628';
+$('adminLoginButton').onclick=()=>{if($('adminPassword').value===DEMO_ADMIN_PASS){$('adminLogin').classList.add('hidden');$('adminTools').classList.remove('hidden');$('adminTarget').value=s.id;showNotice('管理者パネルを開きました（このブラウザ限定）')}else showNotice('パスワードが違います')};
+function targetOk(){let id=$('adminTarget').value.trim();if(id!==s.id){showNotice('試作版では、このブラウザのプレイヤーIDだけ管理できます');return false}return true}
+$('giveMoney').onclick=()=>{if(!targetOk())return;let n=Math.floor(Number($('adminMoney').value));if(!Number.isFinite(n)||n<1){showNotice('金額を入力してください');return}s.cash+=n;addHistory('管理者：通貨付与',s.id,n);save();showNotice(fmt(n)+'を付与しました')};
+$('takeMoney').onclick=()=>{if(!targetOk())return;let n=Math.floor(Number($('adminMoney').value));if(!Number.isFinite(n)||n<1||n>s.cash){showNotice('金額または残高を確認してください');return}s.cash-=n;addHistory('管理者：通貨差引',s.id,-n);save();showNotice(fmt(n)+'を差し引きました')};
+$('kickPlayer').onclick=()=>{if(!targetOk())return;if(confirm('このブラウザのプレイヤーデータをリセットしますか？')){localStorage.removeItem(KEY);location.reload()}};
+$('saveNote').onclick=()=>{let note=$('adminNotice').value.trim();if(!note){showNotice('メモを入力してください');return}addHistory('管理メモ',note,0);save();$('adminNotice').value='';showNotice('メモを記録しました')};
+let last=Date.now();setInterval(()=>{if(!s.id)return;let now=Date.now();s.playMs+=Math.max(0,now-last);last=now;if(s.boostUntil&&s.boostUntil<=now){s.boostUntil=0;s.boostName='';}save()},10000);
+init();
+</script>
+</body></html>
