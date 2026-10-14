@@ -38,7 +38,7 @@ language sql
 stable
 security definer
 set search_path = ''
-as $
+as $$
   select exists (
     select 1
     from auth.users u
@@ -48,7 +48,7 @@ as $
       and u.email_confirmed_at is not null
       and pg_catalog.lower(coalesce(u.email, '')) = s.admin_email
   );
-$;
+$$;
 
 revoke all on function public.is_current_user_admin() from public, anon;
 grant execute on function public.is_current_user_admin() to authenticated;
@@ -268,7 +268,6 @@ begin
 end;
 $disable_legacy_admin_rpc$;
 
--- The former code-based enrollment function is no longer needed by the panel.
 -- The former code-based enrollment function may not exist in every project.
 -- Revoke it only when that exact signature is present, keeping this script re-runnable.
 do $disable_legacy_code_rpc$
