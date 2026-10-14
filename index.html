@@ -54,7 +54,7 @@
   <section id="trade" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">プレイヤー間取引</h3><p class="muted">オンラインサーバー接続前の取引申請フォームです。現段階では相手へ実際に送信・移転されません。</p><div class="field"><label for="tradeTarget">相手のプレイヤーID</label><input id="tradeTarget" placeholder="取引相手のID"></div><div class="field"><label for="tradeItem">渡すアイテム</label><select id="tradeItem"></select></div><div class="field"><label for="tradeCoins">渡すコイン数</label><input id="tradeCoins" type="number" min="0" value="0"></div><button id="createTrade">取引申請を作成（ローカル記録）</button><div id="tradeList" style="margin-top:14px"></div></div><div class="card"><h3 style="margin-top:0">オンライン状態</h3><p><span class="online-dot"></span><b>このブラウザではオンライン</b></p><p class="muted">全プレイヤーのオンライン・オフライン表示はバックエンド接続後に有効になります。</p></div></div></section>
   <section id="leaderboard" class="section"><div class="card"><h3 style="margin-top:0">リーダーボード</h3><div class="warning">この試作版は現在のブラウザに保存されたデータのみ表示します。全員共通のランキングにはサーバー保存が必要です。</div><div class="ranktabs"><button class="active" data-rank="cash">所持コイン</button><button data-rank="items">アイテム価値</button><button data-rank="time">プレイ時間</button></div><div class="tablewrap"><table><thead><tr><th>順位</th><th>プレイヤーID</th><th id="rankMetric">所持コイン</th></tr></thead><tbody id="rankRows"></tbody></table></div></div></section>
   <section id="history" class="section"><div class="card"><h3 style="margin-top:0">履歴</h3><div class="tablewrap"><table><thead><tr><th>日時</th><th>内容</th><th>詳細</th><th>金額</th></tr></thead><tbody id="historyRows"></tbody></table></div><div id="historyEmpty" class="empty">まだ履歴がありません。</div></div></section>
-  <section id="admin" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">管理者パネル</h3><p class="muted">操作のたびにサーバー側で管理者権限を確認します。</p><div id="adminLogin"><div class="field"><label for="adminCode">管理者コード</label><input id="adminCode" type="password" inputmode="numeric" autocomplete="off" maxlength="128" placeholder="管理者コードを入力"></div><button id="adminLoginButton">管理者コードを確認</button><p id="adminAuthMessage" class="tiny muted">メールでログインした後、管理者コードを入力してください。</p><div class="warning">コードはサーバー側で照合します。正しいコードが確認されるまで管理者ツールは開きません。</div></div><div id="adminTools" class="hidden"><div class="field"><label for="adminTarget">対象プレイヤーID</label><input id="adminTarget" placeholder="プレイヤーID"></div><div class="field"><label for="adminMoney">付与 / 差し引きコイン</label><input id="adminMoney" type="number" min="1" value="10000"></div><div class="actions"><button id="giveMoney">コインを付与</button><button id="takeMoney" class="secondary">コインを差し引く</button><button id="kickPlayer" class="red">プレイヤーデータをリセット</button></div><div class="field"><label for="adminNotice">管理メモ</label><input id="adminNotice" placeholder="任意のメモ"></div><button id="saveNote" class="secondary">メモを履歴に記録</button></div></div><div class="card"><h3 style="margin-top:0">管理情報</h3><div class="label">このブラウザのプレイヤー</div><div class="big" id="adminPlayerCount">1</div><div class="label">履歴件数</div><div class="big" id="adminHistoryCount">0</div></div></div></section>
+  <section id="admin" class="section"><div class="grid"><div class="card wide"><h3 style="margin-top:0">管理者パネル</h3><p class="muted">管理者コード認証後に開きます。コイン変更の安全性は、Supabase側の関数でも権限確認が必要です。</p><div id="adminLogin"><div class="field"><label for="adminCode">管理者コード</label><input id="adminCode" type="password" inputmode="numeric" autocomplete="off" maxlength="128" placeholder="管理者コードを入力"></div><button id="adminLoginButton">管理者コードを確認</button><p id="adminAuthMessage" class="tiny muted">メールでログインした後、管理者コードを入力してください。</p><div class="warning">コードはサーバー側で照合します。正しいコードが確認されるまで管理者ツールは開きません。</div></div><div id="adminTools" class="hidden"><div class="field"><label for="adminTarget">対象プレイヤーID</label><input id="adminTarget" placeholder="プレイヤーID"></div><div class="field"><label for="adminMoney">付与 / 差し引きコイン</label><input id="adminMoney" type="number" min="1" value="10000"></div><div class="actions"><button id="giveMoney">コインを付与</button><button id="takeMoney" class="secondary">コインを差し引く</button><button id="kickPlayer" class="red">プレイヤーデータをリセット</button></div><div class="field"><label for="adminNotice">管理メモ</label><input id="adminNotice" placeholder="任意のメモ"></div><button id="saveNote" class="secondary">メモを履歴に記録</button></div></div><div class="card"><h3 style="margin-top:0">管理情報</h3><div class="label">このブラウザのプレイヤー</div><div class="big" id="adminPlayerCount">1</div><div class="label">履歴件数</div><div class="big" id="adminHistoryCount">0</div></div></div></section>
   <div class="footer">NEON EXCHANGE · 試作版 · ゲーム内コインのみ · 現金や暗号資産との連動なし</div>
  </main>
 </div><div id="notice" class="notice"></div>
@@ -199,6 +199,11 @@ renderRank=async function(metric){
  }catch(e){root.innerHTML='<tr><td colspan="3">ランキングを読み込めません：'+esc(backendError(e))+'</td></tr>'}
 };
 $('createTrade').onclick=()=>notice('オンライン取引は安全な取引処理の追加準備中です。今は申請を送信していません。');
+async function confirmAdminRole(){
+ const {data,error}=await onlineClient.rpc('is_current_user_admin');
+ if(error)throw error;
+ return data===true;
+}
 $('adminLoginButton').onclick=async()=>{
  const msg=$('adminAuthMessage'),code=$('adminCode').value;
  if(!onlineUser){msg.textContent='先にメールのログインリンクからサインインしてください。';return}
@@ -208,13 +213,38 @@ $('adminLoginButton').onclick=async()=>{
   const {data,error}=await onlineClient.rpc('verify_admin_code',{p_code:code});
   if(error)throw error;
   if(data!==true){msg.textContent='管理者コードが違います。';$('adminCode').value='';return}
+  if(!await confirmAdminRole()){msg.textContent='管理者権限を確認できませんでした。';return}
   $('adminLogin').classList.add('hidden');$('adminTools').classList.remove('hidden');
   $('adminTarget').value=s.id;$('adminCode').value='';notice('管理者コードを確認しました。');
  }catch(e){msg.textContent='認証に失敗しました：'+backendError(e)+'（Supabase側のSQL設定が必要な場合があります）'}
  finally{$('adminLoginButton').disabled=false}
 };
-$('giveMoney').onclick=()=>{const n=Math.abs(Math.floor(Number($('adminMoney').value)));if(!n){notice('金額を入力してください');return}$('adminMoney').value=String(n);$('adminTarget').value=$('adminTarget').value.trim()||s.id;onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:n,p_reason:'管理者によるコイン付与'}).then(async({error})=>{if(error)notice(backendError(error));else{await refreshOnline();notice(fmt(n)+'コインを付与しました')}})};
-$('takeMoney').onclick=()=>{const n=Math.abs(Math.floor(Number($('adminMoney').value)));if(!n){notice('金額を入力してください');return}$('adminTarget').value=$('adminTarget').value.trim()||s.id;onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:-n,p_reason:'管理者によるコイン差引'}).then(async({error})=>{if(error)notice(backendError(error));else{await refreshOnline();notice(fmt(n)+'コインを差し引きました')}})};
+$('giveMoney').onclick=async()=>{
+ const n=Math.abs(Math.floor(Number($('adminMoney').value)));
+ if(!Number.isSafeInteger(n)||n<1){notice('1以上の安全な整数を入力してください');return}
+ $('giveMoney').disabled=true;
+ try{
+  if(!await confirmAdminRole()){notice('サーバーで管理者権限を確認できませんでした');return}
+  $('adminTarget').value=$('adminTarget').value.trim()||s.id;
+  const {error}=await onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:n,p_reason:'管理者によるコイン付与'});
+  if(error)throw error;
+  await refreshOnline();notice(fmt(n)+'コインを付与しました');
+ }catch(e){notice('コイン付与に失敗しました：'+backendError(e))}
+ finally{$('giveMoney').disabled=false}
+};
+$('takeMoney').onclick=async()=>{
+ const n=Math.abs(Math.floor(Number($('adminMoney').value)));
+ if(!Number.isSafeInteger(n)||n<1){notice('1以上の安全な整数を入力してください');return}
+ $('takeMoney').disabled=true;
+ try{
+  if(!await confirmAdminRole()){notice('サーバーで管理者権限を確認できませんでした');return}
+  $('adminTarget').value=$('adminTarget').value.trim()||s.id;
+  const {error}=await onlineClient.rpc('admin_adjust_coins',{p_player_name:$('adminTarget').value.trim(),p_amount:-n,p_reason:'管理者によるコイン差引'});
+  if(error)throw error;
+  await refreshOnline();notice(fmt(n)+'コインを差し引きました');
+ }catch(e){notice('コイン差引に失敗しました：'+backendError(e))}
+ finally{$('takeMoney').disabled=false}
+};
 $('kickPlayer').onclick=()=>notice('プレイヤー停止機能は、管理者権限をサーバー側で追加してから有効にします。');
 $('saveNote').onclick=()=>notice('管理メモのオンライン保存は次の更新で対応します。');
 setInterval(()=>{if(onlineUser)updatePresence()},30000);
