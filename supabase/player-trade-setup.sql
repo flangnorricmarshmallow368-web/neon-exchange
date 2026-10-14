@@ -89,7 +89,7 @@ begin
     raise exception 'アイテムかコインを指定してください';
   end if;
 
-  select count(*), min(id) into v_match_count, v_recipient
+  select count(*) into v_match_count
   from public.profiles
   where lower(player_name) = lower(pg_catalog.btrim(p_recipient_player_name));
 
@@ -98,6 +98,11 @@ begin
   elsif v_match_count > 1 then
     raise exception '同じプレイヤーIDが複数あります。管理者に連絡してください';
   end if;
+
+  select id into v_recipient
+  from public.profiles
+  where lower(player_name) = lower(pg_catalog.btrim(p_recipient_player_name))
+  limit 1;
 
   if v_recipient = v_sender then
     raise exception '自分自身には取引申請できません';
