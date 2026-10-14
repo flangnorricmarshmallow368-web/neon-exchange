@@ -1,7 +1,7 @@
 -- NEON EXCHANGE: email-locked admin panel
 -- Run this whole file in Supabase SQL Editor.
--- IMPORTANT: set the v_admin_email value in the config block below only in
--- Supabase SQL Editor before running. Do not put the real email in this repository.
+-- The stored MD5 is only an identifier, not a credential; the server still
+-- requires the authenticated Supabase user's email to be confirmed.
 -- This script installs all RPCs used by the admin panel and disables legacy
 -- admin_adjust_coins overloads so they cannot be called around these checks.
 
@@ -9,7 +9,7 @@ create schema if not exists private;
 
 create table if not exists private.neon_admin_settings (
   singleton boolean primary key default true check (singleton),
-  admin_email text not null,
+  admin_email_md5 text not null,
   updated_at timestamptz not null default pg_catalog.now()
 );
 
@@ -18,16 +18,16 @@ revoke all on table private.neon_admin_settings from public, anon, authenticated
 
 do $admin_config$
 declare
-  v_admin_email text := 'SET_ADMIN_EMAIL_HERE';
+  v_admin_email_md5 text := 'd4409fc3455b95d40b86694ab351e3af';
 begin
-  if v_admin_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' then
-    raise exception 'Supabase SQL Editor の v_admin_email に管理者の確認済みメールアドレスを設定してから実行してください。';
+  if v_admin_email_md5 !~ '^[0-9a-f]{32}$' then
+    raise exception '管理者メールの設定ハッシュが不正です。';
   end if;
 
-  insert into private.neon_admin_settings(singleton, admin_email)
-  values (true, pg_catalog.lower(pg_catalog.btrim(v_admin_email)))
+  insert into private.neon_admin_settings(singleton, admin_email_md5)
+  values (true, v_admin_email_md5)
   on conflict (singleton) do update
-    set admin_email = excluded.admin_email,
+    set admin_email_md5 = excluded.admin_email_md5,
         updated_at = pg_catalog.now();
 end;
 $admin_config$;
@@ -46,7 +46,7 @@ as $$
     where s.singleton
       and u.id = auth.uid()
       and u.email_confirmed_at is not null
-      and pg_catalog.lower(coalesce(u.email, '')) = s.admin_email
+      and pg_catalog.md5(pg_catalog.lower(coalesce(u.email, ''))) = s.admin_email_md5
   );
 $$;
 
