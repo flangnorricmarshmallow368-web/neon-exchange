@@ -3,6 +3,10 @@
 -- IMPORTANT: Replace CHANGE_THIS_WITH_YOUR_ADMIN_CODE with your admin code before running.
 -- Never put the real admin code in index.html or any public JavaScript.
 
+-- Ensure bcrypt hashing functions are available in Supabase's extensions schema.
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+
 create schema if not exists private;
 
 create table if not exists private.admin_config (
